@@ -132,6 +132,46 @@ dnf install curl mpv xxd libcurl-devel json-devel cpp-httplib-devel gcc gcc-c++ 
 nix profile install github:UnknownPleasuresDev/succubid
 ```
 
+# Nix modules
+
+## Home-manager
+The home-manager module will automatically configure your environment and set you up with packages you can use
+- MPV configuration to the mpv socket
+- Environment variables for connection key, mpv socket connection and whether gui is enabled
+- Provides packges:
+  - succubid (wrapped with configured arguments)
+  - unwrapped-succubid (just the succubid binary)
+  - succubid-gui (a terminal to keep open that runs succubid in a window, useful if you don't want to enable the service)
+  - succubid-gui-unwrapped (the succubid-gui but with no wrapper args, if you want to override the configuration)
+  - install-succubid (A shell script to install the user-level systemd units to configure succubid
+  - succubid-mpv (a wrapped version of mpv that has succubi args)
+
+## Home-manager options
+
+### Service
+This will enable the background process to run 24/7
+```
+services.succubid.enable = true;
+```
+
+### connectionKey
+This is where you handy code goes
+```
+services.succubid.connectionKey = "abcfdg";
+```
+
+### Gui
+This will enable the funscript selector in MPV when there are multiple versions of funscript detected
+```
+services.succubid.gui = true;
+```
+
+### mpvSocket
+This will customize the MPV Socket location, most of the time you shouldn't need to change this
+```
+services.succubid.mpvSocket = "/path/to/socket/location";
+```
+
 # Disclaimer
 
 Succubid is not affiliated with, endorsed by, or sponsored by Ohdoki AS or The Handy.
