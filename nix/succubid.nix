@@ -81,6 +81,8 @@
         configurePhase = "mkdir -p $out/bin/";
         installPhase = ''
           cp ./succubid $out/bin/unwrapped-succubid
+          install -Dm644 LICENSE $out/share/licenses/succubid/LICENSE
+          install -Dm644 succubid.1 $out/share/man/man1/succubid.1
           makeWrapper $out/bin/unwrapped-succubid $out/bin/succubid --add-flags "-g" --add-flags "-s" --add-flags "''${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/mpv.sock"
           cat ${pkgs.lib.getExe install-systemd} | sed  "s,{{pkg}},$out/bin/succubid," > $out/bin/install-succubid; chmod +x $out/bin/install-succubid
         '';
