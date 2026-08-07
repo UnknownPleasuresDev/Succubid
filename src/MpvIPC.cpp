@@ -6,7 +6,7 @@
 #include <chrono>
 
 MpvIPC::MpvIPC(const std::string &socketPath)
-	: m_seekPending(false), m_restartPending(false), m_socketPath(socketPath), m_socketFd(-1), m_connected(false), m_running(false), m_lastKnownPosition(0.0) {}
+	: m_seekPending(false), m_restartPending(false), m_socketPath(socketPath), m_socketFd(-1), m_connected(false), m_running(false), m_lastKnownPosition(0.0), m_isPlaying(false) {}
 
 MpvIPC::~MpvIPC() {
 	disconnect();
@@ -222,6 +222,7 @@ void MpvIPC::handleIncomingMessage(const std::string &rawMsg) {
 				if(m_onSpeedChanged)
 					m_onSpeedChanged(value.get<double>());
 			} else if(propName == "pause" && !value.is_null()) {
+				m_isPlaying = !value.get<bool>();
 				if(m_onPlayPause)
 					m_onPlayPause(!value.get<bool>());
 			} else if(propName == "time-pos" && !value.is_null() && value.is_number()) {

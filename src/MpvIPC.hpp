@@ -33,6 +33,9 @@ class MpvIPC {
 	double getCurrentPlaybackTime() const {
 		return m_lastKnownPosition;
 	}
+	bool getPlaying() const {
+		return m_isPlaying;
+	}
 
 	void sendCustomMessage(const std::vector<std::string>& args);
 	void sendCustomMessageTo(const std::string &target, const std::vector<std::string>& args);
@@ -79,6 +82,7 @@ class MpvIPC {
 	std::unordered_map<uint64_t, json> m_pendingResponses;
 
 	double m_lastKnownPosition = 0.0;
+	bool m_isPlaying = false;
 
 	std::function<void(const std::string&)> m_onVideoChanged;
 	std::function<void(bool)> m_onPlayPause;

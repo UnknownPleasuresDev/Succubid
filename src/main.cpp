@@ -235,6 +235,8 @@ int main(int argc, char* argv[]) {
 
 	HandyAPIClient::FirmwareVersion firmwareVersion = apiVersion == "FW4" ? HandyAPIClient::FW4 : HandyAPIClient::FW3;
 
+	std::atomic<bool> isInitialConnect{true};
+
 	log(LogLevel::INFO, "Succubid summoned!");
 
 	if(serve_locally) {
@@ -400,8 +402,14 @@ int main(int argc, char* argv[]) {
 					}
 				}
 
-				markSetupFinished(true);
+				if(mpv.getPlaying()) {
+					double currentSec = mpv.getCurrentPlaybackTime();
+					long long timeMs = static_cast<long long>(currentSec * 1000.0);
+					log(LogLevel::INFO, "Play detected at " + std::to_string(currentSec) + "s. Sending play sync to Handy (" + std::to_string(timeMs) + "ms)");
+					handyClient.playScript(timeMs);
+				}
 
+				markSetupFinished(true);
 			} catch(const std::exception& e) {
 				log(LogLevel::ERR, std::string("Error during script lookup/upload: ") + e.what());
 				markSetupFinished(false);
@@ -427,6 +435,11 @@ int main(int argc, char* argv[]) {
 					}
 
 					if(!scriptReady) return;
+
+					if(isInitialConnect.exchange(false)) {
+						log(LogLevel::INFO, "Play event skipped. (Initial Connection)");
+						return;
+					}
 
 					double currentSec = mpv.getCurrentPlaybackTime();
 					long long timeMs = static_cast<long long>(currentSec * 1000.0);
@@ -470,6 +483,7 @@ int main(int argc, char* argv[]) {
 			}
 		} else {
 			log(LogLevel::INFO, "Connection established to active MPV instance!");
+			isInitialConnect = true;
 		}
 	});
 
